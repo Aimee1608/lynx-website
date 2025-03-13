@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useRef, useState } from 'react';
+import { FC, useMemo, useRef, useState } from 'react';
 import { useI18n, useLang } from 'rspress/runtime';
 import {
   Space,
@@ -32,7 +32,16 @@ import { useTreeController } from '../hooks/use-tree-controller';
 import s from './index.module.scss';
 
 const EXAMPLE_BASE_URL =
+  process.env.EXAMPLES_BASE_URL ||
   'https://github.com/lynx-family/lynx-examples/tree/main';
+
+const LYNX_EXPLORER_URL_CN =
+  process.env.LYNX_EXPLORER_URL_CN ||
+  '/zh/guide/start/quick-start.html#download-lynx-explorer,ios-simulator-platform=macos-arm64,explorer-platform=ios-simulator';
+
+const LYNX_EXPLORER_URL_EN =
+  process.env.LYNX_EXPLORER_URL_EN ||
+  '/guide/start/quick-start.html#download-lynx-explorer,ios-simulator-platform=macos-arm64,explorer-platform=ios-simulator';
 
 enum PreviewType {
   Preview = 'Preview',
@@ -57,6 +66,7 @@ interface ExampleContentProps {
   entry?: string;
   defaultWebPreviewFile?: string;
   initState: boolean;
+  rightFooter?: React.ReactNode;
 }
 
 export const ExampleContent: FC<ExampleContentProps> = ({
@@ -76,6 +86,7 @@ export const ExampleContent: FC<ExampleContentProps> = ({
   entry,
   defaultWebPreviewFile,
   initState,
+  rightFooter,
 }) => {
   const { treeData, doChangeExpand, selectedKeys, expandedKeys, entryData } =
     useTreeController({ fileNames, value: currentFileName, entry });
@@ -120,6 +131,7 @@ export const ExampleContent: FC<ExampleContentProps> = ({
     }
     return false;
   };
+
   const showCodeTab = entryData && entryData?.length > 1;
   return (
     <div className={s.box}>
@@ -280,15 +292,15 @@ export const ExampleContent: FC<ExampleContentProps> = ({
                         link={{
                           href:
                             lang === 'zh'
-                              ? `/${lang}/guide/start/quick-start.html#download-lynx-explorer,ios-simulator-platform=macos-arm64,explorer-platform=ios-simulator`
-                              : '/guide/start/quick-start.html#download-lynx-explorer,ios-simulator-platform=macos-arm64,explorer-platform=ios-simulator',
+                              ? LYNX_EXPLORER_URL_CN
+                              : LYNX_EXPLORER_URL_EN,
                           target: '_blank',
                         }}
                         size="small"
                         underline
                       >
                         Lynx Explorer
-                      </Typography.Text>
+                      </Typography.Text>{' '}
                       {t('go.scan.message-2')}
                     </Typography.Text>
                     <div className={s['qrcode-svg']}>
@@ -445,6 +457,7 @@ export const ExampleContent: FC<ExampleContentProps> = ({
                 );
               }}
             />
+            {rightFooter}
           </Space>
         </div>
         <SideSheet
