@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import useSWR from 'swr';
 import useSWRMutation from 'swr/mutation';
 import { ExampleContent } from './components';
@@ -30,6 +30,7 @@ interface ExamplePreviewProps {
   highlight?: string | Record<string, string>;
   entry?: string;
   schema?: string;
+  rightFooter?: React.ReactNode;
 }
 
 export const ExamplePreview = ({
@@ -40,6 +41,7 @@ export const ExamplePreview = ({
   img,
   entry,
   schema,
+  rightFooter,
 }: ExamplePreviewProps) => {
   const [currentName, setCurrentName] = useState(defaultFile);
   const [currentFile, setCurrentFile] = useState('');
@@ -162,6 +164,7 @@ export const ExamplePreview = ({
       entry={entry}
       defaultWebPreviewFile={defaultWebPreviewFile}
       initState={initState}
+      rightFooter={rightFooter}
     />
   );
 };

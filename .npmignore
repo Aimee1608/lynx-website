@@ -1,0 +1,24 @@
+.DS_Store
+*.local
+*.log*
+
+# Dist
+node_modules
+dist/
+doc_build/
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+scripts/*.json
+
+.history
+
+docs/public/lynx-compat-data
+docs/public/lynx-examples
+
+!*logger.md
+
+netlify.toml
