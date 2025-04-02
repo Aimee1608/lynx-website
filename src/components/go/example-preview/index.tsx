@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import useSWR from 'swr';
 import useSWRMutation from 'swr/mutation';
 import { ExampleContent } from './components';
 import { isAssetFileType } from './utils/example-data';
 import Callout from '../../Callout';
+import { SchemaOptionsData } from './hooks/use-switch-schema';
 
 const EXAMPLE_BASE_URL = '/lynx-examples';
 
@@ -27,21 +28,25 @@ interface ExamplePreviewProps {
   defaultFile: string;
   img?: string;
   defaultEntryFile?: string;
+  defaultEntryName?: string;
   highlight?: string | Record<string, string>;
   entry?: string;
   schema?: string;
   rightFooter?: React.ReactNode;
+  schemaOptions?: SchemaOptionsData;
 }
 
 export const ExamplePreview = ({
   example,
   defaultFile = 'package.json',
   defaultEntryFile,
+  defaultEntryName,
   highlight,
   img,
   entry,
   schema,
   rightFooter,
+  schemaOptions,
 }: ExamplePreviewProps) => {
   const [currentName, setCurrentName] = useState(defaultFile);
   const [currentFile, setCurrentFile] = useState('');
@@ -116,9 +121,21 @@ export const ExamplePreview = ({
   useEffect(() => {
     if (exampleData?.templateFiles && exampleData?.templateFiles.length > 0) {
       let tmpEntry;
+      // if defaultEntryFile is provided, use it, if not, use defaultEntryName, if not, use the first file
       if (defaultEntryFile) {
+        const entry =
+          exampleData?.templateFiles.find(
+            (file) => file.file === defaultEntryFile,
+          ) ||
+          exampleData?.templateFiles.find((file) =>
+            file.file.startsWith(defaultEntryFile),
+          );
+        if (entry) {
+          tmpEntry = entry;
+        }
+      } else if (defaultEntryName) {
         const entry = exampleData?.templateFiles.find(
-          (file) => file.file === defaultEntryFile,
+          (file) => file.name === defaultEntryName,
         );
         if (entry) {
           tmpEntry = entry;
@@ -132,10 +149,14 @@ export const ExamplePreview = ({
           setDefaultWebPreviewFile(fullWebFile);
         }
         setCurrentEntry(tmpEntry.name);
+      } else {
+        console.warn(
+          'defaultEntryFile or defaultEntryName params error, please check!',
+        );
       }
       setInitState(true);
     }
-  }, [exampleData, defaultEntryFile]);
+  }, [exampleData, defaultEntryFile, defaultEntryName]);
 
   if (error) {
     return <ErrorWrap example={example} />;
@@ -165,6 +186,7 @@ export const ExamplePreview = ({
       defaultWebPreviewFile={defaultWebPreviewFile}
       initState={initState}
       rightFooter={rightFooter}
+      schemaOptions={schema ? undefined : schemaOptions}
     />
   );
 };
